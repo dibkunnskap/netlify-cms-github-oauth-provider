@@ -20,8 +20,8 @@ const oauth2 = simpleOauthModule.create({
   },
 });
 
-const originPattern = process.env.ORIGIN || "";
-if ("".match(originPattern)) {
+const origins = process.env.ORIGINS.split(` `) || [];
+if (origins.length === 0) {
   console.warn(
     "Insecure ORIGIN pattern used. This can give unauthorized users access to your repository."
   );
@@ -77,8 +77,9 @@ app.get("/callback", (req, res) => {
     <script>
     (function() {
       function recieveMessage(e) {
+        let origins = ${JSON.stringify(origins)};
         console.log("recieveMessage %o", e)
-        if (!e.origin.match("${originPattern}")) {
+        if (!origins.includes(e.origin)) {
           console.log('Invalid origin: %s', e.origin);
           return;
         }
@@ -103,7 +104,7 @@ app.get("/success", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send(`Hello<br>
+  res.send(`Hello, dib cms oath provider here<br>
     <a href="/auth" target="${loginAuthTarget}">
       Log in with ${oauthProvider.toUpperCase()}
     </a>`);
